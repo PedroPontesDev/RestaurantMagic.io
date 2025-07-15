@@ -23,7 +23,7 @@ public class Pedido {
 	@OneToMany
 	private List<ItemPedido> itensPedido = new ArrayList<>();
 
-	@OneToMany
+	@ManyToOne
 	private UsuarioGarcom garcomPedido;
 
 	@ManyToOne
@@ -32,9 +32,8 @@ public class Pedido {
 	@ManyToOne
 	Mesa mesaDoPedido;
 
-	private Double Total;
+	private Double total;
 
-	
 	public Pedido(Long pedidoId, List<ItemPedido> itensPedido, UsuarioGarcom garcomPedido, UsuarioCliente clientePedido,
 			Mesa mesaDoPedido, Double total) {
 		this.pedidoId = pedidoId;
@@ -42,7 +41,7 @@ public class Pedido {
 		this.garcomPedido = garcomPedido;
 		this.clientePedido = clientePedido;
 		this.mesaDoPedido = mesaDoPedido;
-		Total = total;
+		this.total = total;
 	}
 
 	public Pedido() {
@@ -70,13 +69,12 @@ public class Pedido {
 	}
 
 	public void setTotal(Double total) {
-		Total = total;
+		this.total = total;
 	}
 
 	public List<ItemPedido> getItensPedido() {
 		return itensPedido;
 	}
-
 
 	public UsuarioGarcom getGarcomPedido() {
 		return garcomPedido;
@@ -95,64 +93,16 @@ public class Pedido {
 	}
 
 	public Double getTotal() {
-		return Total;
+		return this.total;
 	}
 
 	public void setSubTotal(Double Total) {
-		this.Total = Total;
+		this.total = Total;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(pedidoId);
-	}
-
-	public double calcularComisaoBaseadoTotalPedido(ItemPedido item) throws Exception {
-
-		// Dados garçom
-		double salarioAtual;
-		double salarioAtualizado;
-		double salarioGarcom;
-		UsuarioGarcom garcomDaMesa;
-
-		// Calcular total do pedido
-		double valorItem;
-		List<ItemPedido> itensDoPedido = new ArrayList<>();
-		
-		for (ItemPedido itens : this.itensPedido) {
-			if (!this.itensPedido.contains(itens))
-				throw new Exception("Itens não estão no pedido");
-		
-			ItemPedido itemPedido =new ItemPedido();
-			itemPedido.setNomeItem(itens.getNomeItem());
-			itemPedido.setPrecoUnitario(itens.getPrecoUnitario());
-			itemPedido.setQuantidade(itens.getQuantidade());
-			itensDoPedido.add(itemPedido);
-			valorItem = itemPedido.getPrecoUnitario();
-		}
-
-		double subtotal = itensDoPedido.
-				stream()
-				.mapToDouble(i -> i.getPrecoUnitario() * i.getQuantidade())
-				.sum();
-
-		double valorTotalDePedido = 0.0;
-
-		// Calcular comissão e total do pedido
-
-		for (UsuarioGarcom garcom : garcomPedido) {
-			garcomDaMesa = garcom;
-			salarioGarcom = garcomDaMesa.getSalario();
-			salarioAtual = salarioGarcom;
-
-			double comissao = (garcomDaMesa.getSalario() * garcomDaMesa.getCOMISSAO() / valorTotalDePedido);
-			valorTotalDePedido = subtotal + comissao;
-			;
-			garcomDaMesa.setSalario(garcomDaMesa.getSalario() + comissao);
-
-		}
-		return valorTotalDePedido;
-
 	}
 
 	@Override
@@ -170,9 +120,7 @@ public class Pedido {
 	@Override
 	public String toString() {
 		return "Pedido [pedidoId=" + pedidoId + ", itensPedido=" + itensPedido + ", garcomPedido=" + garcomPedido
-				+ ", clientePedido=" + clientePedido + ", mesaDoPedido=" + mesaDoPedido + ", Total=" + Total + "]";
+				+ ", clientePedido=" + clientePedido + ", mesaDoPedido=" + mesaDoPedido + ", Total=" + total + "]";
 	}
 
-	
-	
 }

@@ -15,25 +15,27 @@ public interface GarcomUsuarioServices {
     // --- GESTÃO DE GARÇONS ---
     Set<UsuarioGarcom> listarTodosGarcons();
 
-    GarcomDTO listarGarcomComMaiorSalario(double limiteMax);
+    GarcomDTO listarGarcomComMaiorSalario(long garcomId, double limiteMax);
 
     GarcomDTO procurarGarcomPorId(Long id);
+    
+    GarcomDTO procurarGarcomPorNome(Long id);
 
-    boolean verificarDisponibilidadeDeGarcom(String nomeGarcom);
+    boolean verificarDisponibilidadeDeGarcom(String nomeGarcom) throws Exception;
 
     boolean promoverGarcom(Long garcomId); //METODO NA CLASSE PAI IS TOOP SELLER
 
     
     // --- GESTÃO DE MESA E COMANDA ---
+    
     Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId);
 
-    List<Mesa> listarMesasPorGarcom(Long garcomId);
+    List<Mesa> listarMesasPorGarcom(Long garcomId) throws Exception;
 
     boolean liberarMesa(Long mesaId, Long garcomId);
 
 
     Pedido abrirComanda(Long garcomId, Long mesaId, String nomeCliente, List<Long> itemPedidoIds) throws Exception;
-
 
     Pedido fecharComandaECalcularComissaoDeSeller(double bonus, Long pedidoId);
 
@@ -41,7 +43,8 @@ public interface GarcomUsuarioServices {
 
     
     // --- GESTÃO FINANCEIRA ---
-    double calcularSalarioFinal(Long pedidoId);
+    
+    double calcularSalarioFinal(List<Long> garcomsId);
 
     double calcularComissaoMensal(Long garcomId);
 
@@ -51,6 +54,7 @@ public interface GarcomUsuarioServices {
 
     List<RegistroDePonto> listarFaltasGarcom(Long garcomId);
 
-    long calcularDiasDesdeUltimaFalta(Long garcomId);
+}
+
 
 	
