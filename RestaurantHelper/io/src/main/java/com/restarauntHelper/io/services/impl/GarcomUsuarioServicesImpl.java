@@ -56,6 +56,8 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 		
 		raturn garcomExistente;
 
+		
+		 
 	}
 
 	@Override
@@ -63,11 +65,11 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 		UsuarioGarcom garcomExistente = garcomRepository.findByNome(nomeGarcom);
 
 		if (garcomExistente == null) {
-			throw new RuntimeException("Garçom não encontrado com nome: " + nomeGarcom);
+			return false;
 		}
 
 		if (garcomExistente.getMesaDeGarconsRelacionados().size() > 5) {
-			throw new Exception("Garcom nao disponivel ppois está ocupado");
+			return false;
 
 		}
 		return true;
@@ -81,8 +83,17 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	}
 
 	@Override
-	public Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId) {
-		// TODO Auto-generated method stub
+	public Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId) throws Exception {
+		
+		Mesa mesaProcurada = mesaRepository.findById(mesaId)
+							.orElseThrow(() -> new Exception("Mesa não encontrada com ID" + mesaId));
+		
+		//Verificar se mesa esta disponivel, se clientes e  a apacidade da mesa se comportam 
+		if(mesaProcurada.)
+			
+			
+	
+		//Garçom faz alocamento de mesa coloca clientes numa mesa existente que nçao esteja cheia se atrela a mesa
 		return null;
 	}
 

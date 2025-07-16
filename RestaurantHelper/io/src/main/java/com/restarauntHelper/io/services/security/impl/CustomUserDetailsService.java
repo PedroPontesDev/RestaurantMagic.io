@@ -1,9 +1,6 @@
 package com.restarauntHelper.io.services.security.impl;
 
-import java.util.Optional;
-
-import javax.management.RuntimeErrorException;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +12,7 @@ import com.restarauntHelper.io.repositories.UserRepositories;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
+	@Autowired
 	private UserRepositories userRepository; 
 	
 

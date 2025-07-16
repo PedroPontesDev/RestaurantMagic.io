@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,14 +32,38 @@ public class Mesa {
 
 	@ManyToMany
 	private List<UsuarioGarcom> garconsDaMesa;
-
+	
+	@Column
+	private boolean disponivel;
+	
+	@Column
+	private static final int CAPACIDAE_MAXIMA = 10;
+	
 	public Mesa(Long id, String numeroMesa, List<Pedido> pedidosDaMesa, UsuarioCliente clienteMesa,
-			List<UsuarioGarcom> garconsDaMesa) {
+			List<UsuarioGarcom> garconsDaMesa, boolean disponivel) {
 		this.id = id;
 		this.numeroMesa = numeroMesa;
 		this.pedidosDaMesa = pedidosDaMesa;
 		this.clienteMesa = clienteMesa;
 		this.garconsDaMesa = garconsDaMesa;
+		this.disponivel = disponivel;
+	}
+	
+	public Mesa() {
+		
+	}
+
+	public boolean isDisponivel() {
+		if(CAPACIDAE_MAXIMA == 10) return false;
+		return disponivel;
+	}
+
+	public void setDisponivel(boolean disponivel) {
+		this.disponivel = disponivel;
+	}
+
+	public static int getCapacidaeMaxima() {
+		return CAPACIDAE_MAXIMA;
 	}
 
 	public Long getId() {
@@ -101,8 +126,10 @@ public class Mesa {
 	@Override
 	public String toString() {
 		return "Mesa [id=" + id + ", numeroMesa=" + numeroMesa + ", pedidosDaMesa=" + pedidosDaMesa + ", clienteMesa="
-				+ clienteMesa + ", garconsDaMesa=" + garconsDaMesa + "]";
+				+ clienteMesa + ", garconsDaMesa=" + garconsDaMesa + ", disponivel=" + disponivel + "]";
 	}
+
+	
 	
 	
 	
