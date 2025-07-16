@@ -54,7 +54,7 @@ public class Mesa {
 	}
 
 	public boolean isDisponivel() {
-		if(CAPACIDAE_MAXIMA == 10) return false;
+		if(this.clienteMesa != null) return false;
 		return disponivel;
 	}
 

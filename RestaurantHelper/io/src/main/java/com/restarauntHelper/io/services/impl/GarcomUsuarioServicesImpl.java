@@ -1,20 +1,22 @@
 package com.restarauntHelper.io.services.impl;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.restarauntHelper.io.model.entities.ItemPedido;
 import com.restarauntHelper.io.model.entities.Mesa;
 import com.restarauntHelper.io.model.entities.Pedido;
 import com.restarauntHelper.io.model.entities.RegistroDePonto;
 import com.restarauntHelper.io.model.entities.UsuarioCliente;
 import com.restarauntHelper.io.model.entities.UsuarioGarcom;
 import com.restarauntHelper.io.model.entities.dtos.GarcomDTO;
+import com.restarauntHelper.io.model.entities.enums.StatusPedido;
 import com.restarauntHelper.io.repositories.MesaRepositories;
 import com.restarauntHelper.io.repositories.OrderItemRepositories;
 import com.restarauntHelper.io.repositories.PedidoRepositories;
@@ -40,6 +42,8 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	@Autowired
 	private OrderItemRepositories itemPedidoRepository;
 
+	private static final long EXPIRACAO_PEDIDO_MINUTOS = 60; // 1 hora
+	
 	// FAZER RELAÇÕES E FAZER BOAS REGRAS D E NEGOCIOS BEM PENSADAS
 
 	@Override
@@ -53,11 +57,9 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	public GarcomDTO procurarGarcomPorId(Long garcomid) throws Exception {
 		UsuarioGarcom garcomExistente = garcomRepository.findById(garcomid)
 				.orElseThrow(() -> new Exception("Garcom não encontrado com ID" + garcomid));
-		
+
 		raturn garcomExistente;
 
-		
-		 
 	}
 
 	@Override
@@ -84,27 +86,36 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 
 	@Override
 	public Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId) throws Exception {
-		
+
 		Mesa mesaProcurada = mesaRepository.findById(mesaId)
-							.orElseThrow(() -> new Exception("Mesa não encontrada com ID" + mesaId));
-		
-		//Verificar se mesa esta disponivel, se clientes e  a apacidade da mesa se comportam 
-		if(mesaProcurada.)
-			
-			
-	
-		//Garçom faz alocamento de mesa coloca clientes numa mesa existente que nçao esteja cheia se atrela a mesa
-		return null;
+				.orElseThrow(() -> new Exception("Mesa não encontrada com ID" + mesaId));
+
+		UsuarioCliente clienteParaMesa = clienteRepository.findById(clienteId)
+				.orElseThrow(() -> new Exception("Cliente não encontrada com ID" + clienteId));
+
+		UsuarioGarcom garcomDaMesa = garcomRepository.findById(garcomId)
+				.orElseThrow(() -> new Exception("Cliente não encontrada com ID" + garcomId));
+
+		if (clienteParaMesa.getQuantidadeDeVisitas() > mesaProcurada.getCapacidaeMaxima())
+			throw new Exception("Não é possivel trazer mais de 10 pessoas para está mesa!");
+		if (!mesaProcurada.isDisponivel())
+			throw new Exception("Mesa já contem cliente!");
+
+		mesaProcurada.getGarconsDaMesa().add(garcomDaMesa);
+		mesaProcurada.setClienteMesa(clienteParaMesa);
+		mesaProcurada.setDisponivel(false);
+		mesaRepository.save(mesaProcurada);
+
+		return mesaProcurada;
 	}
 
 	@Override
 	public List<Mesa> listarMesasPorGarcom(Long garcomId) throws Exception {
 		UsuarioGarcom garcomDeMesa = garcomRepository.findById(garcomId)
-									.orElseThrow(() -> new Exception("Usuario não encontrado com ID" + garcomId));
-		return garcomDeMesa.getMesaDeGarconsRelacionados()
-							.stream()
-							.sorted(Comparator.comparing(Mesa::getNumeroMesa).reversed()).toList();			
-		
+				.orElseThrow(() -> new Exception("Usuario não encontrado com ID" + garcomId));
+		return garcomDeMesa.getMesaDeGarconsRelacionados().stream()
+				.sorted(Comparator.comparing(Mesa::getNumeroMesa).reversed()).toList();
+
 	}
 
 	@Override
@@ -114,8 +125,10 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	}
 
 	@Override
-	public Pedido abrirComanda(Long garcomId, Long mesaId, String nomeCliente, List<Long> itemPedidoIds)
+	public Pedido abrirComandaComItens(Long garcomId, Long mesaId, String nomeCliente, List<Long> itemPedidoIds)
 			throws Exception {
+		
+		if(itemPedidoIds.isEmpty()) throw new Exception("Itens não encontrados com ids" + itemPedidoIds);
 
 		UsuarioGarcom garcomDoPedido = garcomRepository.findById(garcomId)
 				.orElseThrow(() -> new Exception("Garcom não encontrando com ID" + garcomId));
@@ -132,31 +145,17 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 		abrirPedidoComanda.setClientePedido(usuarioCliente);
 		abrirPedidoComanda.setTotal(0.0);
 		abrirPedidoComanda.setSubTotal(0.0);
-		abrirPedidoComanda // Criar um STATUS DE PEDIDO
+		abrirPedidoComanda.setStatusPedido(StatusPedido.ABERTO); 
 
-		/*
-		 * Caso queira dicionar itens ao pedido já
-		 * 
-		 * List<ItemPedido> itemPedido = itemPedidoRepository.
-		 * findAllById(itemPedidoIds) .stream()
-		 * .sorted(Comparator.comparing(ItemPedido::getQuantidade).reversed())
-		 * .toList();
-		 * 
-		 * abrirPedidoComanda.getItensPedido().addAll(itemPedido);
-		 * 
-		 * Caso queira dicionar um item ao pedido já
-		 */
+		//Acha os itens de pedido por ID e insere no array ordenado pela quantidade
+		List<ItemPedido> itemPedido = itemPedidoRepository.findAllById(itemPedidoIds).stream()
+				.sorted(Comparator.comparing(ItemPedido::getQuantidade).reversed()).toList();
 
+		abrirPedidoComanda.getItensPedido().addAll(itemPedido);
 		pedidoRepository.save(abrirPedidoComanda);
 
 		return abrirPedidoComanda;
 
-	}
-
-	@Override
-	public Pedido fecharComandaECalcularComissaoDeSeller(double bonus, Long pedidoId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -199,6 +198,44 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	public double calcularSalarioFinal(List<Long> garcomsId) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	@Override
+	public Pedido fecharComandaECalcularComissaoDeGarcom(double bonus, Long pedidoId) throws Exception { //Metodo deve atualizar o ststus de pedido como fechado calcular o total baseaodnos itense a comissao do garcom * total da conta / 100
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
+	//CRIAR METODO INSERIR item EM PEDIDO COMANDA QUE JA ESTA ABERTO
+
+	@Override
+	public Pedido abrirComandaSemItens(Long garcomId, Long mesaId, String nomeCliente) throws Exception {
+
+		UsuarioGarcom garcomDoPedido = garcomRepository.findById(garcomId)
+				.orElseThrow(() -> new Exception("Garcom não encontrando com ID" + garcomId));
+
+		Mesa mesaDeComanda = mesaRepository.findById(mesaId)
+				.orElseThrow(() -> new Exception("Mesa não enoncontrada com ID" + mesaId));
+
+		UsuarioCliente usuarioCliente = clienteRepository.findByNomeCliente(nomeCliente)
+				.orElseThrow((() -> new Exception("Cliente não encontrado com nome" + nomeCliente)));
+
+		
+		Pedido novoPedido = new Pedido();
+		novoPedido.setClientePedido(usuarioCliente);
+		novoPedido.setGarcomPedido(garcomDoPedido);
+		novoPedido.setMesaDoPedido(mesaDeComanda);
+		novoPedido.setSubTotal(0.0);
+		novoPedido.setTotal(null);
+		novoPedido.setStatusPedido(StatusPedido.PENDENTE);
+		pedidoRepository.save(novoPedido);
+		return novoPedido;
+		
+		
 	}
 
 }

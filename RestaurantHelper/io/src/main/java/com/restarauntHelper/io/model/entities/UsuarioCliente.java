@@ -22,7 +22,9 @@ public class UsuarioCliente extends User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long clienteId;
 	
-	private Integer quantidadeDeVisitas;
+	private Integer quantidadeDeVisitas; //PESSOAS QUE ACOMPANHAM O CLIENTE
+	
+	private Integer freqVisitas;
 	
 	private String nomeCliente;
 	
@@ -32,11 +34,27 @@ public class UsuarioCliente extends User {
 		this.nomeCliente = nomeCliente;
 	}
 
+	public UsuarioCliente(Long clienteId, Integer quantidadeDeVisitas, Integer freqVisitas, String nomeCliente) {
+		super();
+		this.clienteId = clienteId;
+		this.quantidadeDeVisitas = quantidadeDeVisitas;
+		this.freqVisitas = freqVisitas;
+		this.nomeCliente = nomeCliente;
+	}
+
 	public UsuarioCliente() {
 	}
 
 	
 	
+	public Integer getFreqVisitas() {
+		return freqVisitas;
+	}
+
+	public void setFreqVisitas(Integer freqVisitas) {
+		this.freqVisitas = freqVisitas;
+	}
+
 	public Long getClienteId() {
 		return clienteId;
 	}

@@ -6,7 +6,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.restarauntHelper.io.model.entities.enums.StatusPedido;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,19 +38,24 @@ public class Pedido {
 
 	private Double total;
 
+	@Enumerated(EnumType.STRING)
+	private StatusPedido statusPedido;
+
 	public Pedido(Long pedidoId, List<ItemPedido> itensPedido, UsuarioGarcom garcomPedido, UsuarioCliente clientePedido,
-			Mesa mesaDoPedido, Double total) {
+			Mesa mesaDoPedido, Double total, StatusPedido statusPedido) {
 		this.pedidoId = pedidoId;
 		this.itensPedido = itensPedido;
 		this.garcomPedido = garcomPedido;
 		this.clientePedido = clientePedido;
 		this.mesaDoPedido = mesaDoPedido;
 		this.total = total;
+		this.statusPedido = statusPedido;
 	}
 
 	public Pedido() {
 
 	}
+
 
 	public Long getPedidoId() {
 		return pedidoId;
@@ -56,6 +65,15 @@ public class Pedido {
 		this.pedidoId = pedidoId;
 	}
 
+	public StatusPedido getStatusPedido() {
+		return statusPedido;
+	}
+
+	public void setStatusPedido(StatusPedido statusPedido) {
+		this.statusPedido = statusPedido;
+	}
+
+	
 	public Mesa getMesaDoPedido() {
 		return mesaDoPedido;
 	}

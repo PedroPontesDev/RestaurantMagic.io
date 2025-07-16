@@ -17,7 +17,7 @@ public interface GarcomUsuarioServices {
 
     GarcomDTO listarGarcomComMaiorSalario(long garcomId, double limiteMax);
 
-    GarcomDTO procurarGarcomPorId(Long id);
+    GarcomDTO procurarGarcomPorId(Long id) throws Exception;
     
     GarcomDTO procurarGarcomPorNome(Long id);
 
@@ -28,16 +28,19 @@ public interface GarcomUsuarioServices {
     
     // --- GESTÃO DE MESA E COMANDA ---
     
-    Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId);
+    Mesa alocarMesa(Long garcomId, Long mesaId, Long clienteId) throws Exception;
 
     List<Mesa> listarMesasPorGarcom(Long garcomId) throws Exception;
 
-    boolean liberarMesa(Long mesaId, Long garcomId);
+    boolean liberarMesa(Long mesaId, Long garcomId) throws Exception;
 
 
-    Pedido abrirComanda(Long garcomId, Long mesaId, String nomeCliente, List<Long> itemPedidoIds) throws Exception;
+    Pedido abrirComandaSemItens(Long garcomId, Long mesaId, String nomeCliente) throws Exception;
+    
+    Pedido abrirComandaComItens(Long garcomId, Long mesaId, String nomeCliente, List<Long> itemPedidoIds)
+			throws Exception;
 
-    Pedido fecharComandaECalcularComissaoDeSeller(double bonus, Long pedidoId);
+    Pedido fecharComandaECalcularComissaoDeGarcom(double bonus, Long pedidoId)throws Exception;
 
     List<Pedido> listarPedidosDoGarcom(Long garcomId);
 
@@ -53,6 +56,8 @@ public interface GarcomUsuarioServices {
     RegistroDePonto registrarFaltaGarcom(Long garcomId);
 
     List<RegistroDePonto> listarFaltasGarcom(Long garcomId);
+
+	
 
 }
 
