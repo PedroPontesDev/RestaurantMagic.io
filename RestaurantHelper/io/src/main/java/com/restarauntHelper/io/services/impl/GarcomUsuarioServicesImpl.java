@@ -55,10 +55,7 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 
 	@Override
 	public GarcomDTO procurarGarcomPorId(Long garcomid) throws Exception {
-		UsuarioGarcom garcomExistente = garcomRepository.findById(garcomid)
-				.orElseThrow(() -> new Exception("Garcom não encontrado com ID" + garcomid));
-
-		raturn garcomExistente;
+		return new GarcomDTO(null, null, null, false);
 
 	}
 
@@ -70,7 +67,7 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 			return false;
 		}
 
-		if (garcomExistente.getMesaDeGarconsRelacionados().size() > 5) {
+		if (garcomExistente.getMesaDeGarconsRelacionados().size() >= 5) {
 			return false;
 
 		}
@@ -121,7 +118,7 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	@Override
 	public boolean liberarMesa(Long mesaId, Long garcomId) {
 		// TODO Auto-generated method stub
-		return false; // remover garcom do arraylist atrelado a mesa ou o queal q seja a collection
+		return false; // remover garcom do arraylist atrelado a mesa ou o queal q seja a collection comp por tbm umm cliente
 	}
 
 	@Override
@@ -202,10 +199,39 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 
 
 	@Override
-	public Pedido fecharComandaECalcularComissaoDeGarcom(double bonus, Long pedidoId) throws Exception { //Metodo deve atualizar o ststus de pedido como fechado calcular o total baseaodnos itense a comissao do garcom * total da conta / 100
+	public Pedido fecharComandaECalcularComissaoDeGarcom(double bonus, Long pedidoId) throws Exception { 
+		//Metodo deve atualizar o ststus de pedido como fechado calcular o total baseao nos itens e a comissao do garcom * total da conta / 100
+		Pedido pedidoAberto = pedidoRepository.findById(pedidoId)
+														.orElseThrow(() -> new Exception("Pedido não encontrado com ID" + pedidoId));
+
+		UsuarioCliente cliente = pedidoAberto.getClientePedido();
+		UsuarioGarcom garcom = pedidoAberto.getGarcomPedido();
 		
-		// TODO Auto-generated method stub
-		return null;
+		
+		double totalPedido = pedidoAberto.getItensPedido()
+							.stream().mapToDouble(i -> i.getPrecoUnitario() * i.getQuantidade()).sum();
+		
+		double salarioAtualGarcomPedido = garcom.getSalario();
+		
+		double comissao = (totalPedido * garcom.getCOMISSAO()) / 100;
+
+		if(pedidoAberto.getStatusPedido().equals(StatusPedido.ABERTO)) {
+			pedidoAberto.setClientePedido(cliente);
+			pedidoAberto.setGarcomPedido(garcom);
+			pedidoAberto.setStatusPedido(StatusPedido.FECHADO);
+			pedidoAberto.setSubTotal(totalPedido);
+			pedidoAberto.setTotal(totalPedido + comissao);
+			pedidoRepository.save(pedidoAberto);
+			
+			
+			garcom.setSalario(salarioAtualGarcomPedido + comissao + bonus);
+			garcomRepository.save(garcom);
+			
+			return pedidoAberto;
+			
+		} throw new Exception("Erro ao fechar comanda");
+	
+	
 	}
 	
 	

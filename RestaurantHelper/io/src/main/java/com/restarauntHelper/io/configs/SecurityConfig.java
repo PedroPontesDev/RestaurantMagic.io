@@ -1,13 +1,32 @@
-package com.restarauntHelper.io.configs;
+package com.restarauntHelper.io.jwt;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import java.security.Key;
 
-@EnableWebSecurity
-@Configuration
-public class SecurityConfig {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-   // private final JwtAuthenticationFilter jwtAuthFilter;
-   // private final CustomUserDetailsService userDetailsService;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
+@Service
+public class JwtServices {
+
+	@Value("jwt.secret")
+	private String jwtSecret;
+
+	@Value("${jwt.expiration}")
+	private long jwtExpiration;
+	
+	
+	private Key getSginatureKey() { //Gera a asignartura sha no jwt??
+		byte[] keyEmBytes = Decoders.BASE64.decode(jwtSecret);
+		return Keys.hmacShaKeyFor(keyEmBytes);
+	}
+	
+	public String generateToken(UserDetail userDetails) {
+		
+	}
+	
+	
 	
 }
