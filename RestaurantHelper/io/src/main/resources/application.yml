@@ -1,24 +1,22 @@
 spring:
   application:
-    name: io
+    name: course-RestApis-Completas
 
   datasource:
-    url: jdbc:mysql://localhost:3306/db_restaurante
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dbcourse_apis?useTimezone=true&serverTimezone=UTC
     username: root
-    password: ${DB_PASSWORD}
+    password: 35828889
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-jwt:
-  secret: ${JWT_SECRET}
-  expiration: 36000000
+    show-sql: false
 
 logging:
   level:
-    com.restauranteHelper.io: WARN
+    root: WARN
+   ## com.restauranteHelper.io: DEBUG

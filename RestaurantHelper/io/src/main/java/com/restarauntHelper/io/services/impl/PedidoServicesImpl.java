@@ -2,10 +2,14 @@ package com.restarauntHelper.io.services.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.restarauntHelper.io.model.entities.dtos.GarcomDTO;
 import com.restarauntHelper.io.model.entities.dtos.ItemPedidoDTO;
 import com.restarauntHelper.io.model.entities.dtos.PedidoDTO;
 import com.restarauntHelper.io.services.PedidoServices;
+
 
 public class PedidoServicesImpl  implements PedidoServices{
 
@@ -16,6 +20,8 @@ public class PedidoServicesImpl  implements PedidoServices{
 	//JPA EM PedidoRepositorie
 	
 	//FAZER RELAÇÕES E FAZER BOAS REGRAS DE NEGOCIOS BEM PENSADAS
+	
+	private Logger logger = LoggerFactory.getLogger(PedidoServicesImpl.class.getName());
 	
 	@Override
 	public Double calcularComissaoDeVendedor(Long pedidoId, Long mesaId) {
