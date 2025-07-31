@@ -71,4 +71,10 @@ public class PedidoServicesImpl  implements PedidoServices{
 		return null;
 	}
 
+	@Override
+	public List<PedidoDTO> acharPedidosPorNumeroDeMesa(String mesaNumero) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

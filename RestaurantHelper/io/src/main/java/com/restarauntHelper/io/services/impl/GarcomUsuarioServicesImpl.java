@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,8 @@ public class GarcomUsuarioServicesImpl implements GarcomUsuarioServices {
 	private static final long EXPIRACAO_PEDIDO_MINUTOS = 60; // 1 hora
 	
 	// FAZER RELAÇÕES E FAZER BOAS REGRAS D E NEGOCIOS BEM PENSADAS
+	
+	private Logger logger = LoggerFactory.getLogger(PedidoServicesImpl.class.getName());
 
 	@Override
 	public Set<UsuarioGarcom> listarTodosGarcons() {

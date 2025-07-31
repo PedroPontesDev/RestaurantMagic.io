@@ -12,7 +12,7 @@ import com.restarauntHelper.io.model.entities.dtos.PedidoDTO;
 public interface PedidoServices {
 	
 
-	Double calcularComissaoDeVendedor(Long pedidoId, Long mesaId); //Trazer os garçons ou de um pedido ou de uma pesa a critério
+	Double calcularComissaoDeVendedor(Long pedidoId, Long mesaId); //Trazer os garçons ou de um pedido ou de uma mesa a critério
 	
 	Double calcularTotalDoPedido(Long pedidoId);
 	
@@ -21,6 +21,8 @@ public interface PedidoServices {
 	PedidoDTO fecharPedido(Long pedidoId);
 	
 	PedidoDTO adicionarItemAPedido(ItemPedidoDTO item, Long pedidoId);
+	
+	List<PedidoDTO> acharPedidosPorNumeroDeMesa(String mesaNumero);
 	
 	void adicionarItensAUmPedido(List<Long> itensDePedidoId, Long pedidoId);
 	

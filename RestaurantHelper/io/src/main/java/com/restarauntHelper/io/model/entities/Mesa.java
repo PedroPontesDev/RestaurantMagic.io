@@ -36,7 +36,7 @@ public class Mesa {
 	@Column
 	private boolean disponivel;
 	
-	@Column
+	@Column(length = 10)
 	private static final int CAPACIDAE_MAXIMA = 10;
 	
 	public Mesa(Long id, String numeroMesa, List<Pedido> pedidosDaMesa, UsuarioCliente clienteMesa,
@@ -62,7 +62,7 @@ public class Mesa {
 		this.disponivel = disponivel;
 	}
 
-	public static int getCapacidaeMaxima() {
+	public int getCapacidaeMaxima() {
 		return CAPACIDAE_MAXIMA;
 	}
 
